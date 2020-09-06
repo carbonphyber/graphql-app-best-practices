@@ -1,10 +1,21 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+/* eslint-env browser */
+import React, { useEffect, useRef } from 'react';
+import { gql, useLazyQuery } from '@apollo/client';
 
 export default function FirstQuery({}) {
-  const { data, error, loading } = useQuery(gql`query { hello }`, {
+  const timerRef = useRef(null);
+  const [execQuery, { called, data, error, loading }] = useLazyQuery(gql`query { hello }`, {
     variables: {},
   });
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      execQuery();
+    }, 4000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [execQuery, timerRef]);
 
   if (error) return 'Error';
   if (loading) return 'Loading...';
@@ -12,7 +23,7 @@ export default function FirstQuery({}) {
 
   return (
     <div>
-      {hello}
+      {called ? hello : 'waiting...'}
     </div>
   );
 }
