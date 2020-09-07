@@ -4,8 +4,11 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import FirstQuery from './FirstQuery';
 import './App.css';
 
+const defaultServerUrl = 'http://localhost:4000';
+const serverUrl = document.querySelector('meta[name="SERVER_URL"]')?.getAttribute('content') || defaultServerUrl;
+
 const client = new ApolloClient({
-  uri: 'http://localhost:4000',
+  uri: serverUrl,
   cache: new InMemoryCache()
 });
 
@@ -14,9 +17,7 @@ function App() {
     <ApolloProvider client={client}>
       <div className="App">
         <header className="App-header">
-          <p>
-            <FirstQuery />
-          </p>
+          <FirstQuery />
         </header>
       </div>
     </ApolloProvider>
