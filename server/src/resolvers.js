@@ -5,7 +5,18 @@ let helloCount = 0;
 const resolvers = {
   Query: {
     hello: () => 'world',
-    notificationsCount: () => helloCount++,
+    notificationsCount: () => {
+      if (Math.random() > 0.5) {
+        helloCount += 1;
+      }
+      return helloCount;
+    },
+  },
+  Mutation: {
+    clearNotificationsCount: () => {
+      helloCount = 0;
+      return true;
+    },
   },
 };
 

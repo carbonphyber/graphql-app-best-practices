@@ -7,6 +7,9 @@ const typeDefs = gql`
     hello: String,
     notificationsCount: Int,
   }
+  type Mutation {
+    clearNotificationsCount: Boolean,
+  }
 `;
 
 

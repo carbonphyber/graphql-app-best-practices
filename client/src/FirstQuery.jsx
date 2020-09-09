@@ -1,11 +1,14 @@
 /* eslint-env browser */
 import React, { useEffect, useRef, useState } from 'react';
-import { gql, useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { Badge } from '@material-ui/core';
 import { Mail as MailIcon } from '@material-ui/icons';
 
 const queryDelayInitial = 100;
 const queryDelayPolling = 5000;
+
+const notificationsQuery = gql`query { notificationsCount }`;
+const notificationsMutation = gql`mutation { clearNotificationsCount }`;
 
 export default function FirstQuery() {
   const timerRef = useRef(null);
@@ -13,9 +16,21 @@ export default function FirstQuery() {
   const [
     execQuery,
     { called, data, error, startPolling, stopPolling },
-  ] = useLazyQuery(gql`query { notificationsCount }`, {
+  ] = useLazyQuery(notificationsQuery, {
     fetchPolicy: 'cache-and-network',
     variables: {},
+  });
+
+  const [clearNotificationsCount, { loading }] = useMutation(notificationsMutation, {
+    onCompleted: () => {
+      startPolling(queryDelayPolling);
+    },
+    refetchQueries: [
+      {
+        query: notificationsQuery,
+        variables: {},
+      },
+    ],
   });
 
   useEffect(() => {
@@ -43,8 +58,13 @@ export default function FirstQuery() {
 
   return (
     <p>
-      <Badge color="secondary" badgeContent={notificationsCount || 0}>
-        <MailIcon />
+      <Badge color="secondary" badgeContent={loading ? '...' : (notificationsCount || 0)}>
+        <MailIcon
+          onClick={() => {
+            setIsPolling(false);
+            clearNotificationsCount();
+          }}
+        />
       </Badge>
     </p>
   );
