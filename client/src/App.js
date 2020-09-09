@@ -1,3 +1,4 @@
+import { persistCache } from 'apollo-cache-persist';
 import React from 'react';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
@@ -7,9 +8,15 @@ import './App.css';
 const defaultServerUrl = 'http://localhost:4000';
 const serverUrl = document.querySelector('meta[name="SERVER_URL"]')?.getAttribute('content') || defaultServerUrl;
 
+const cache = new InMemoryCache({});
+persistCache({
+  cache,
+  storage: window.localStorage,
+});
+
 const client = new ApolloClient({
   uri: serverUrl,
-  cache: new InMemoryCache()
+  cache,
 });
 
 function App() {
